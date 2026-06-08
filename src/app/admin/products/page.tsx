@@ -1,0 +1,189 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import Image from "next/image";
+import { Plus, Search, Pencil, Trash2, Package } from "lucide-react";
+import { useAdmin } from "@/context/AdminContext";
+import { ProductEditor } from "@/components/admin/ProductEditor";
+import { AdminButton, EmptyState, inputClass } from "@/components/admin/ui";
+import { Badge } from "@/components/ui/Badge";
+import { formatINR } from "@/lib/utils";
+import type { Product } from "@/lib/types";
+
+export default function AdminProductsPage() {
+  const { products, categories, saveProduct, deleteProduct } = useAdmin();
+  const [query, setQuery] = useState("");
+  const [editing, setEditing] = useState<Product | null>(null);
+  const [creating, setCreating] = useState(false);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return products;
+    return products.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q),
+    );
+  }, [products, query]);
+
+  function remove(p: Product) {
+    if (window.confirm(`Delete "${p.name}"? This cannot be undone.`)) {
+      deleteProduct(p.id);
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="font-serif text-2xl font-bold text-maroon-900">
+            Products
+          </h1>
+          <p className="text-sm text-ink-500">
+            {products.length} item{products.length !== 1 ? "s" : ""} in your
+            catalog
+          </p>
+        </div>
+        <AdminButton onClick={() => setCreating(true)}>
+          <Plus size={16} /> Add product
+        </AdminButton>
+      </div>
+
+      {/* Search */}
+      <div className="relative max-w-sm">
+        <Search
+          size={16}
+          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-400"
+        />
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search products…"
+          className={`${inputClass} pl-9`}
+        />
+      </div>
+
+      {filtered.length === 0 ? (
+        <EmptyState
+          icon={<Package size={26} />}
+          title="No products found"
+          text={
+            query
+              ? "Try a different search."
+              : "Add your first product to get started."
+          }
+        />
+      ) : (
+        <div className="overflow-hidden rounded-2xl border border-cream-200 bg-white">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-cream-200 text-left text-xs uppercase tracking-wide text-ink-400">
+                  <th className="px-4 py-3 font-medium">Product</th>
+                  <th className="px-4 py-3 font-medium">Category</th>
+                  <th className="px-4 py-3 font-medium">Price from</th>
+                  <th className="px-4 py-3 font-medium">Stock</th>
+                  <th className="px-4 py-3 font-medium">Status</th>
+                  <th className="px-4 py-3 text-right font-medium">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-cream-200">
+                {filtered.map((p) => {
+                  const minPrice = Math.min(...p.variants.map((v) => v.price));
+                  const stock = p.variants.reduce((s, v) => s + v.stock, 0);
+                  return (
+                    <tr key={p.id} className="hover:bg-cream-50">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-cream-100">
+                            {p.images[0] && (
+                              <Image
+                                src={p.images[0]}
+                                alt={p.name}
+                                fill
+                                sizes="44px"
+                                className="object-cover"
+                              />
+                            )}
+                          </span>
+                          <div className="min-w-0">
+                            <p className="truncate font-medium text-maroon-900">
+                              {p.name}
+                            </p>
+                            <p className="truncate text-xs text-ink-400">
+                              /{p.slug}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 capitalize text-ink-600">
+                        {p.categoryLabel ?? p.category}
+                      </td>
+                      <td className="px-4 py-3 font-medium text-maroon-900">
+                        {formatINR(minPrice)}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={
+                            stock === 0
+                              ? "font-semibold text-maroon-700"
+                              : stock <= 10
+                                ? "font-semibold text-saffron-600"
+                                : "text-ink-600"
+                          }
+                        >
+                          {stock}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <Badge tone={p.active ? "leaf" : "muted"}>
+                          {p.active ? "Active" : "Hidden"}
+                        </Badge>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex justify-end gap-1">
+                          <button
+                            type="button"
+                            onClick={() => setEditing(p)}
+                            aria-label={`Edit ${p.name}`}
+                            className="flex h-9 w-9 items-center justify-center rounded-lg text-ink-500 hover:bg-cream-100 hover:text-maroon-800"
+                          >
+                            <Pencil size={16} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => remove(p)}
+                            aria-label={`Delete ${p.name}`}
+                            className="flex h-9 w-9 items-center justify-center rounded-lg text-ink-500 hover:bg-maroon-700/5 hover:text-maroon-700"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {(editing || creating) && (
+        <ProductEditor
+          product={editing}
+          categories={categories}
+          onSave={(p) => {
+            saveProduct(p);
+            setEditing(null);
+            setCreating(false);
+          }}
+          onClose={() => {
+            setEditing(null);
+            setCreating(false);
+          }}
+        />
+      )}
+    </div>
+  );
+}

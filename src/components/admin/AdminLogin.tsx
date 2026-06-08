@@ -1,0 +1,88 @@
+"use client";
+
+import { useState } from "react";
+import { ShieldCheck, ArrowRight } from "lucide-react";
+import { useAdmin } from "@/context/AdminContext";
+import { DEMO_ADMIN } from "@/lib/api/adminAuth";
+import { config } from "@/lib/config";
+import { inputClass } from "./ui";
+
+export function AdminLogin() {
+  const { login, loading } = useAdmin();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    try {
+      await login(email, password);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Login failed.");
+    }
+  }
+
+  return (
+    <div className="flex min-h-[70vh] items-center justify-center px-4 py-14">
+      <div className="w-full max-w-md rounded-3xl border border-cream-200 bg-white p-7 shadow-soft sm:p-8">
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-maroon-800 text-saffron-400">
+          <ShieldCheck size={22} />
+        </span>
+        <h1 className="mt-5 font-serif text-2xl font-bold text-maroon-900">
+          Admin sign in
+        </h1>
+        <p className="mt-1 text-sm text-ink-500">
+          {config.businessName} store dashboard
+        </p>
+
+        <form onSubmit={submit} className="mt-6 space-y-4">
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-maroon-900">
+              Email
+            </label>
+            <input
+              type="email"
+              autoFocus
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="admin@example.com"
+              className={inputClass}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-maroon-900">
+              Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              className={inputClass}
+            />
+          </div>
+
+          {error && <p className="text-sm text-maroon-700">{error}</p>}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-maroon-800 text-sm font-semibold text-cream-50 hover:bg-maroon-700 disabled:opacity-60"
+          >
+            {loading ? "Signing in…" : "Sign in"}
+            <ArrowRight size={18} />
+          </button>
+        </form>
+
+        {config.useMock && (
+          <div className="mt-5 rounded-xl bg-cream-100 px-4 py-3 text-xs text-ink-500">
+            <p className="font-semibold text-maroon-800">Demo credentials</p>
+            <p className="mt-1">Email: {DEMO_ADMIN.email}</p>
+            <p>Password: {DEMO_ADMIN.password}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

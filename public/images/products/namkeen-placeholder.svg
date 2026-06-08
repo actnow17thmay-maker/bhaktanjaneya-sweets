@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Namkeen">
+  <defs>
+    <linearGradient id="bgn" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff3e3"/>
+      <stop offset="1" stop-color="#f8e8d2"/>
+    </linearGradient>
+    <linearGradient id="bowl" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8a1a2b"/>
+      <stop offset="1" stop-color="#5d0e19"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="600" fill="url(#bgn)"/>
+  <g>
+    <polygon points="250,250 300,170 350,250" fill="#f4a73a"/>
+    <polygon points="300,255 350,180 396,258" fill="#ec8f1e"/>
+    <polygon points="206,258 252,182 300,258" fill="#f8c06b"/>
+    <rect x="232" y="240" width="20" height="60" rx="8" fill="#cf7611"/>
+    <rect x="300" y="236" width="20" height="64" rx="8" fill="#cf7611" transform="rotate(12 310 268)"/>
+    <rect x="280" y="244" width="18" height="56" rx="8" fill="#d9ad3f" transform="rotate(-14 289 272)"/>
+  </g>
+  <path d="M180 300 H420 A120 120 0 0 1 180 300 Z" fill="url(#bowl)"/>
+  <ellipse cx="300" cy="300" rx="120" ry="26" fill="#74121f"/>
+  <text x="300" y="512" text-anchor="middle" font-family="Georgia, serif" font-size="32" fill="#74121f" opacity="0.6">Bhaktanjaneya Sweets</text>
+</svg>

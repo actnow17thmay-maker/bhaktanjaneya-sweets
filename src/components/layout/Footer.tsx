@@ -1,0 +1,154 @@
+import Link from "next/link";
+import { MapPin, Phone, Mail, ShieldCheck } from "lucide-react";
+import { Container } from "@/components/ui/Container";
+import { NewsletterForm } from "@/components/NewsletterForm";
+import {
+  InstagramIcon,
+  FacebookIcon,
+  YoutubeIcon,
+} from "@/components/icons/BrandIcons";
+import { config } from "@/lib/config";
+
+const shopLinks = [
+  { href: "/shop", label: "Shop All" },
+  { href: "/collections/sweets", label: "Sweets" },
+  { href: "/collections/namkeen", label: "Namkeen" },
+  { href: "/shop?tag=best-seller", label: "Best Sellers" },
+  { href: "/bulk-orders", label: "Bulk & Gifting" },
+];
+
+const companyLinks = [
+  { href: "/about", label: "Our Story" },
+  { href: "/bulk-orders", label: "Bulk & Corporate Orders" },
+  { href: "/blog", label: "Blog" },
+  { href: "/contact", label: "Contact Us" },
+];
+
+const policyLinks = [
+  { href: "/policies/shipping", label: "Shipping Policy" },
+  { href: "/policies/returns", label: "Returns & Refunds" },
+  { href: "/policies/privacy", label: "Privacy Policy" },
+  { href: "/policies/terms", label: "Terms of Service" },
+];
+
+const socials = [
+  { href: config.social.instagram, label: "Instagram", icon: InstagramIcon },
+  { href: config.social.facebook, label: "Facebook", icon: FacebookIcon },
+  { href: config.social.youtube, label: "YouTube", icon: YoutubeIcon },
+];
+
+function FooterColumn({
+  title,
+  links,
+}: {
+  title: string;
+  links: { href: string; label: string }[];
+}) {
+  return (
+    <div>
+      <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-saffron-400">
+        {title}
+      </h3>
+      <ul className="space-y-2.5 text-sm text-cream-100/80">
+        {links.map((l) => (
+          <li key={l.href + l.label}>
+            <Link href={l.href} className="transition-colors hover:text-saffron-300">
+              {l.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export function Footer() {
+  return (
+    <footer className="mt-16 bg-maroon-900 text-cream-50">
+      <Container>
+        <div className="grid grid-cols-2 gap-10 py-14 md:grid-cols-3 lg:grid-cols-6">
+          {/* Brand */}
+          <div className="col-span-2 lg:col-span-2">
+            <Link href="/" className="inline-flex items-center gap-2">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-saffron-500 font-serif text-lg font-bold text-maroon-900">
+                B
+              </span>
+              <span className="font-serif text-xl font-bold leading-tight">
+                Bhaktanjaneya
+                <span className="block text-sm font-medium text-saffron-300">
+                  Sweets
+                </span>
+              </span>
+            </Link>
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-cream-100/80">
+              {config.tagline} Traditional recipes, premium ingredients, and pure
+              ghee in every bite.
+            </p>
+            <div className="mt-5 flex items-center gap-3">
+              {socials.map(({ href, label, icon: Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-cream-50/10 text-cream-50 transition-colors hover:bg-saffron-500 hover:text-maroon-900"
+                >
+                  <Icon size={18} />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <FooterColumn title="Shop" links={shopLinks} />
+          <FooterColumn title="Company" links={companyLinks} />
+          <FooterColumn title="Policies" links={policyLinks} />
+
+          {/* Newsletter + contact */}
+          <div className="col-span-2 lg:col-span-1">
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-saffron-400">
+              Stay in touch
+            </h3>
+            <NewsletterForm />
+            <ul className="mt-5 space-y-2.5 text-sm text-cream-100/80">
+              <li className="flex items-start gap-2">
+                <MapPin size={16} className="mt-0.5 shrink-0 text-saffron-400" />
+                {config.contact.address}
+              </li>
+              <li className="flex items-center gap-2">
+                <Phone size={16} className="shrink-0 text-saffron-400" />
+                <a href={`tel:${config.contact.phone.replace(/\s/g, "")}`} className="hover:text-saffron-300">
+                  {config.contact.phone}
+                </a>
+              </li>
+              <li className="flex items-center gap-2">
+                <Mail size={16} className="shrink-0 text-saffron-400" />
+                <a href={`mailto:${config.contact.email}`} className="hover:text-saffron-300">
+                  {config.contact.email}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </Container>
+
+      <div className="border-t border-cream-50/10">
+        <Container>
+          <div className="flex flex-col items-center justify-between gap-3 py-5 text-xs text-cream-100/70 sm:flex-row">
+            <p>
+              &copy; {new Date().getFullYear()} {config.businessName}. All rights
+              reserved.
+            </p>
+            <p className="inline-flex items-center gap-1.5">
+              <ShieldCheck size={14} className="text-saffron-400" />
+              Secure WhatsApp ordering &middot; Online payments coming soon
+            </p>
+            <Link href="/admin" className="transition-colors hover:text-saffron-300">
+              Admin
+            </Link>
+          </div>
+        </Container>
+      </div>
+    </footer>
+  );
+}

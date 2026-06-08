@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Sweet">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff3e3"/>
+      <stop offset="1" stop-color="#f8e8d2"/>
+    </linearGradient>
+    <radialGradient id="laddu" cx="0.4" cy="0.35" r="0.85">
+      <stop offset="0" stop-color="#f8c06b"/>
+      <stop offset="0.55" stop-color="#ec8f1e"/>
+      <stop offset="1" stop-color="#cf7611"/>
+    </radialGradient>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg)"/>
+  <circle cx="300" cy="285" r="155" fill="url(#laddu)"/>
+  <g fill="#ffffff" opacity="0.5">
+    <circle cx="258" cy="238" r="8"/>
+    <circle cx="332" cy="258" r="7"/>
+    <circle cx="300" cy="318" r="7"/>
+    <circle cx="356" cy="318" r="6"/>
+    <circle cx="246" cy="312" r="6"/>
+    <circle cx="318" cy="360" r="5"/>
+  </g>
+  <circle cx="300" cy="285" r="155" fill="none" stroke="#74121f" stroke-opacity="0.16" stroke-width="10"/>
+  <text x="300" y="512" text-anchor="middle" font-family="Georgia, serif" font-size="32" fill="#74121f" opacity="0.6">Bhaktanjaneya Sweets</text>
+</svg>

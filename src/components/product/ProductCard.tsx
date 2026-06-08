@@ -1,0 +1,156 @@
+"use client";
+
+import Link from "next/link";
+import Image from "next/image";
+import { useState } from "react";
+import { ShoppingBag, MessageCircle, Check } from "lucide-react";
+import type { Product } from "@/lib/types";
+import { Rating } from "@/components/ui/Rating";
+import { useCart } from "@/context/CartContext";
+import {
+  defaultVariant,
+  priceRange,
+  inStock,
+  bestDiscountPct,
+  toCartItem,
+} from "@/lib/product";
+import { waLink, productEnquiryMessage } from "@/lib/whatsapp";
+import { formatINR, cn } from "@/lib/utils";
+
+const TAG_LABELS: Record<string, string> = {
+  "best-seller": "Best Seller",
+  "top-pick": "Top Pick",
+  new: "New",
+  combo: "Combo",
+};
+
+export function ProductCard({
+  product,
+  className,
+}: {
+  product: Product;
+  className?: string;
+}) {
+  const { add } = useCart();
+  const [added, setAdded] = useState(false);
+
+  const variant = defaultVariant(product);
+  const { min, hasRange } = priceRange(product);
+  const available = inStock(product);
+  const discount = bestDiscountPct(product);
+  const featureTag = product.tags.find((t) => TAG_LABELS[t]);
+  const href = `/product/${product.slug}`;
+
+  function quickAdd() {
+    add(toCartItem(product, variant));
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1400);
+  }
+
+  return (
+    <div
+      className={cn(
+        "group flex h-full flex-col overflow-hidden rounded-2xl border border-cream-200 bg-white shadow-soft transition-shadow hover:shadow-card",
+        className,
+      )}
+    >
+      <Link href={href} className="relative block aspect-square overflow-hidden bg-cream-100">
+        <Image
+          src={product.images[0]}
+          alt={product.name}
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 280px"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+
+        <div className="absolute left-3 top-3 flex flex-col gap-1.5">
+          {discount > 0 && (
+            <span className="rounded-full bg-maroon-800 px-2.5 py-1 text-xs font-bold text-cream-50">
+              {discount}% OFF
+            </span>
+          )}
+          {featureTag && (
+            <span className="rounded-full bg-saffron-400 px-2.5 py-1 text-xs font-semibold text-maroon-900">
+              {TAG_LABELS[featureTag]}
+            </span>
+          )}
+        </div>
+
+        {!available && (
+          <div className="absolute inset-0 flex items-center justify-center bg-cream-50/70">
+            <span className="rounded-full bg-ink-900/80 px-4 py-1.5 text-sm font-semibold text-cream-50">
+              Out of stock
+            </span>
+          </div>
+        )}
+      </Link>
+
+      <div className="flex flex-1 flex-col p-4">
+        {product.categoryLabel && (
+          <span className="text-xs font-medium uppercase tracking-wide text-ink-400">
+            {product.categoryLabel}
+          </span>
+        )}
+        <h3 className="mt-1 font-serif text-base font-semibold leading-snug text-maroon-900">
+          <Link href={href} className="transition-colors hover:text-saffron-600">
+            {product.name}
+          </Link>
+        </h3>
+
+        <div className="mt-1.5">
+          <Rating value={product.rating} count={product.reviewCount} />
+        </div>
+
+        <div className="mt-2 flex items-baseline gap-2">
+          <span className="text-lg font-bold text-maroon-900">
+            {hasRange && (
+              <span className="mr-1 text-xs font-medium text-ink-400">from</span>
+            )}
+            {formatINR(min)}
+          </span>
+          {variant.mrp && variant.mrp > variant.price && (
+            <span className="text-sm text-ink-400 line-through">
+              {formatINR(variant.mrp)}
+            </span>
+          )}
+        </div>
+
+        <div className="mt-4 flex items-center gap-2 pt-1">
+          <button
+            type="button"
+            onClick={quickAdd}
+            disabled={!available}
+            className={cn(
+              "inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-full text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50",
+              added
+                ? "bg-leaf-600 text-white"
+                : "bg-maroon-800 text-cream-50 hover:bg-maroon-700",
+            )}
+          >
+            {added ? (
+              <>
+                <Check size={16} /> Added
+              </>
+            ) : (
+              <>
+                <ShoppingBag size={16} /> Add
+              </>
+            )}
+          </button>
+
+          <a
+            href={waLink(
+              productEnquiryMessage(product.name, variant.label, variant.price),
+            )}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Order ${product.name} on WhatsApp`}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#25D366] text-white transition-colors hover:bg-[#1fb457]"
+          >
+            <MessageCircle size={18} />
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
